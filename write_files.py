@@ -11,10 +11,11 @@ def write_blockstate(user_input, index=None):
     i = index
 
   print("count is specified")
-  working_dir = paths.get_current_dir()
-  config_dir = paths.get_config_dir()
-  template_dir = paths.get_template_dir()
-  file_paths = open(config_dir + "paths.json","r")
+  # config_dir = paths.get_config_dir()
+  file_config = paths.get_config_dir("paths")
+
+  file_paths = open(file_config,"r")
+  json_paths = json.load(file_paths)
 
   # 1. Read template file
   print("Load JSON file into variable")
@@ -32,11 +33,26 @@ def write_blockstate(user_input, index=None):
   # Write to file
   print("Creating file...")
   print("user_input: " + user_input)
-  output_file = open(user_input + "_" + str(i) + "x.json", 'w')
 
-  print("Writing to file...")
-  output_file.writelines(new_list2)
-  output_file.close()
+  # Fetch directory for blockstates file
+  dir_working = paths.get_current_dir()
+  dir_blockstate = json_paths['paths']['create']['blockstates']
+  dir_output = dir_working + "\\java\\" +  dir_blockstate
+
+  print("blockstate: " + dir_working + dir_blockstate)
+  # dir_output = paths.get_current_dir()
+
+  try:
+    print("DEBUG: " +  dir_output + user_input + "_" + str(i) + "x.json")
+    output_file = open(dir_output + user_input + "_" + str(i) + "x.json", 'w')
+
+    print("Writing to file...")
+    output_file.writelines(new_list2)
+    output_file.close()
+  except FileNotFoundError:
+    print("ERROR: Directory does not exist.")
+  except:
+    print("ERROR: Unknown error occurred.")
   
   return
 
