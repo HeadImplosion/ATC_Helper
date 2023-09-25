@@ -1,0 +1,23 @@
+{
+  "paths": {
+    "create": {
+      "blockstates": "src\\generated\\resources\\assets\\allthecompressed\\blockstates\\",
+      "models": {
+        "block": "src\\generated\\resources\\assets\\allthecompressed\\models\\block\\",
+        "item": "src\\generated\\resources\\assets\\allthecompressed\\models\\item\\"
+      },
+      "recipes": {
+        "compress": "src\\generated\\resources\\data\\allthecompressed\\recipes\\compress\\",
+        "decompress": "src\\generated\\resources\\data\\allthecompressed\\recipes\\decompresscompress\\"
+      },
+      "advancements": {
+        "compress": "src\\generated\\resources\\data\\allthecompressed\\advancements\\recipes\\building_blocks\\compress\\",
+        "decompress": "src\\generated\\resources\\data\\allthecompressed\\advancements\\recipes\\building_blocks\\decompress\\"
+      }
+    },
+    "append": {
+      "overlay": "src\\main\\java\\com\\Pdiddy973\\AllTheCompressed\\overlay\\Overlays.java",
+      "lang": "src\\generated\\resources\\assets\\allthecompressed\\lang\\en_us.json"
+    }
+  }
+}
