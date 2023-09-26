@@ -4,37 +4,28 @@ import re
 import paths
 import config_class
 
-# Create a file for a single compressed variant of input block
-def write_blockstate(user_input, index=None):
-  config_class.dir_config
-  i = -1
-
-  if index is not None:
-    i = index
-  else:
-    i = 1
-
+# Create a blockstate file for user input
+def write_blockstate(user_input, index):
   # Read template file for "blockstates" JSON (in templates folder)
-  strings_blockstates = template_file_to_strings("template_blockstates")
-
   # Fill in template fields with user input
-  new_list = replace_template.replace_lines(strings_blockstates, user_input)
-  new_list = replace_template.replace_no(new_list, i)
+  template_filled_lines = replace_template_terms(\
+    "template_blockstates", user_input, index)
 
   # File is ready to be written.
   # Fetch directory for blockstates file
   # by joining directories (full current + local src)
-  dir_local_blockstates = config_class.get_local_file_dir("blockstates")
-  dir_output = "\\".join([config_class.dir_java, dir_local_blockstates])
 
   try:
     # Format file name to {name}_{n}x.json,
     # then write to corresponding directory
-    output_file = open(dir_output + user_input + "_" + str(i) + "x.json", 'w')
-
-    print("Writing to file: " +  dir_output + user_input + "_" + str(i) + "x.json")
-    output_file.writelines(new_list)
+    # output_file = open(dir_output + user_input + "_" + str(index) + "x.json", 'w')
+    dir_output = get_full_dir("blockstates")
+    output_file = open("".join([dir_output, user_input, "_", str(index), "x.json"]), 'w')
+    
+    print("Writing to file: " +  dir_output + user_input + "_" + str(index) + "x.json")
+    output_file.writelines(template_filled_lines)
     output_file.close()
+    print("Successfully written blockstates file.")
   except FileNotFoundError:
     print("ERROR: Directory does not exist.")
   except:
@@ -58,8 +49,54 @@ def read_config(filename):
 
 # Write 1x-9x variations of user input block
 def write_blockstate_all(user_input):
-  count = 9
-  for x in range(count):
-    # print("Iteration no. " + str(x+1))
+  for x in range(9):
+    print("Iteration no. " + str(x+1))
     write_blockstate(user_input, str(x+1))
   return
+
+def get_full_dir(directory):
+  dir_local = config_class.get_local_file_dir(directory)
+  dir_output = "\\".join([config_class.dir_java, dir_local])
+  return dir_output
+
+# Create a block model file from user input
+def write_model_block(user_input, index):
+  
+  # Run lines array through replacement process twice
+  template_filled_lines = replace_template_terms(\
+    "template_models_block", user_input, index)
+
+  try:
+    dir_output = get_full_dir("models.block")
+
+    print("Writing block model file...")
+    output_file = open("".join([\
+      dir_output, user_input, "_", str(index), "x.json"]), 'w')
+    output_file.writelines(template_filled_lines)
+    output_file.close()
+
+    print("Block model JSON written.")
+  except FileNotFoundError:
+    print("ERROR: Block model file cannot be written.")
+  except:
+    print("ERROR: Unknown error has occurred")
+
+def write_model_block_all(user_input):
+  for x in range(9):
+    write_model_block(user_input, str(x+1))
+  return
+
+# # WIP!!!
+# # Copy the above function and see if you can
+# # create a generalized version for both blockstates and block model
+# def write_file(user_input, index, template_name):
+#   template_filled_lines = replace_template_terms(\
+#     template_name, user_input, index)
+
+def replace_template_terms(template_name, user_input, index):
+  strings_template = template_file_to_strings(template_name)
+
+  new_list = replace_template.replace_lines(strings_template, user_input)
+  new_list = replace_template.replace_no(new_list, str(index))
+
+  return new_list
