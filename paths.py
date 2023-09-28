@@ -3,6 +3,7 @@ from os.path import abspath
 from json_types import JsonTypes
 import os, sys
 import json
+import traceback
 
 # what = abspath(getsourcefile(lambda:0))
 
@@ -17,25 +18,36 @@ def get_config_dir(filename=None):
   else:
     return get_current_dir() + "\\config\\" + filename + ".json"
 
-def get_template_dir(filename=None):
-  if filename is None:
-    return get_current_dir() + "\\templates\\"
-  else:
-    return get_current_dir() + "\\templates\\" + filename + ".json"
+def get_template_dir(json_type=None):
+  try:
+    template_filename = ""
+    file_prefix = "template_"
 
-def get_paths_json():
+    if json_type is not None:
+      # JsonTypes.BLOCKSTATES.name.lower()
+
+      template_filename = file_prefix + json_type.name.lower()
+
+      return get_current_dir() + "\\templates\\" + template_filename + ".json"
+    else:
+      return get_current_dir() + "\\templates\\" + template_filename
+  except:
+    print("[paths.py:35]\tget_template_dir(json_type=None) ERROR! See below:")
+    traceback.print_exc()
+    return "_invalid"
+
+
+def get_dirs_json():
   # Find directory of paths.json in config folder
-  print("path: " + get_config_dir("paths"))
+  # print("path: " + get_config_dir("paths"))
 
   file_config = open(get_config_dir("paths"))
-  json_config_paths = json.load(file_config)
-  json_dir = json_config_paths
-  return json_dir
+  return json.load(file_config)
 
 # Load ATC JSON files
 def get_json_dir(json_type):
   json_dir = ""
-  json_file = get_paths_json()
+  json_file = get_dirs_json()
 
   # Get corresponding directory of AllTheCompressed JSONs
   match json_type:
@@ -62,5 +74,7 @@ def get_json_dir(json_type):
 
   return json_dir
 
-print("Getting dir of 'blockstates': ")
-print(get_json_dir(JsonTypes.BLOCKSTATES))
+# print("Getting dir of 'blockstates': ")
+# print("Blockstates dir: " + get_json_dir(JsonTypes.BLOCKSTATES))
+# print("Block models dir: " + get_json_dir(JsonTypes.MODELS_BLOCK))
+# print("Decompress recipes dir: " + get_json_dir(JsonTypes.RECIPES_DECOMPRESS))
