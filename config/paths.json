@@ -8,7 +8,7 @@
       },
       "recipes": {
         "compress": "src\\generated\\resources\\data\\allthecompressed\\recipes\\compress\\",
-        "decompress": "src\\generated\\resources\\data\\allthecompressed\\recipes\\decompresscompress\\"
+        "decompress": "src\\generated\\resources\\data\\allthecompressed\\recipes\\decompress\\"
       },
       "advancements": {
         "compress": "src\\generated\\resources\\data\\allthecompressed\\advancements\\recipes\\building_blocks\\compress\\",
