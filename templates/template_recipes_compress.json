@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "#": {
-      "item": "[mod]:[template][no_x]"
+      "item": "[mod]:[template][lesser_no_x]"
     }
   },
   "pattern": [
@@ -12,7 +12,7 @@
     "###"
   ],
   "result": {
-    "item": "allthecompressed:[template]_[no]x"
+    "item": "allthecompressed:[template]_[no_x]"
   },
   "show_notification": true
 }
