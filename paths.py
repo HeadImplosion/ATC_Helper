@@ -36,7 +36,6 @@ def get_template_dir(json_type=None):
     traceback.print_exc()
     return "_invalid"
 
-
 def get_dirs_json():
   # Find directory of paths.json in config folder
   # print("path: " + get_config_dir("paths"))
@@ -74,7 +73,8 @@ def get_json_dir(json_type):
 
   return json_dir
 
-# print("Getting dir of 'blockstates': ")
-# print("Blockstates dir: " + get_json_dir(JsonTypes.BLOCKSTATES))
-# print("Block models dir: " + get_json_dir(JsonTypes.MODELS_BLOCK))
-# print("Decompress recipes dir: " + get_json_dir(JsonTypes.RECIPES_DECOMPRESS))
+def get_java_dir():
+  return "\\".join([get_current_dir(), "java"])
+
+def get_json_dir_full(json_type):
+  return "\\".join([get_java_dir(), get_json_dir(json_type)])

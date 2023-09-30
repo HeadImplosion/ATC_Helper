@@ -22,3 +22,7 @@ class JsonTypes(Enum):
   ADVANCEMENTS_DECOMPRESS = 7
   OVERLAY = 8
   LANG = 9
+
+  def get_layered_jsons():
+    return [JsonTypes.RECIPES_COMPRESS, JsonTypes.RECIPES_DECOMPRESS,\
+      JsonTypes.ADVANCEMENTS_COMPRESS, JsonTypes.ADVANCEMENTS_DECOMPRESS]
