@@ -1,28 +1,28 @@
+from block_class import BlockClass
 from json_types import JsonTypes
 import json
 import paths
 import re
 import traceback
 
-def replace_lines(line_array, user_input):
+def replace_tag_template(line_array, block: BlockClass):
+  user_input = block.block_name
   new_list = []
   print("Replacing [template] with user input...")
   for line in line_array:
     new_line = re.sub(r"\[template\]", user_input, line)
-    # print(new_line)
     new_list.append(new_line)
   return new_list
 
-def replace_no(line_array, index):
+def replace_tag_no(line_array, index):
   new_list = []
   print("Replacing [no] with index...")
   for line in line_array:
     new_line = re.sub(r"\[no\]", str(index), line)
-    # print(new_line)
     new_list.append(new_line)
   return new_list
 
-def replace_mod(line_array, index):
+def replace_tag_mod(line_array, index):
   new_list = []
   print("Replacing [mod] with user input..")
   for line in line_array:
@@ -30,7 +30,7 @@ def replace_mod(line_array, index):
     new_list.append(new_line)
   return new_list
 
-def replace_no_x(line_array, index):
+def replace_tag_no_x(line_array, index):
   new_list = []
   print("Replacing [no_x] with index_x...")
   for line in line_array:
@@ -38,102 +38,70 @@ def replace_no_x(line_array, index):
     new_list.append(new_line)
   return new_list
 
-def replace_layered_json(json_type, input_mod_name, input_block):
+# #######
+# # WIP #
+# #######
+# def replace_layered_json(json_type, input_block):
   
-  json_types_layered = [\
-    JsonTypes.RECIPES_COMPRESS, JsonTypes.RECIPES_DECOMPRESS,\
-    JsonTypes.ADVANCEMENTS_COMPRESS, JsonTypes.ADVANCEMENTS_DECOMPRESS]
+#   # json_types_layered = JsonTypes.get_layered_jsons()
   
-  dir_json = paths.get_template_dir(json_type)
-  file_json = open(dir_json, 'r')
-  json_loaded = json.load(file_json)
+#   dir_json = paths.get_template_dir(json_type)
+#   file_json = open(dir_json, 'r')
+#   json_loaded = json.load(file_json)
   
-  match json_type:
-    # case json_type if json_type in json_types_layered:
-    case JsonTypes.RECIPES_COMPRESS:
-      # Use different replacement method
-      block_id = ":".join([input_mod_name, input_block])
+#   match json_type:
+#     case JsonTypes.RECIPES_COMPRESS:
+#       return write_compressed_recipe(json_type, input_block, json_loaded)
+#     case JsonTypes.RECIPES_DECOMPRESS:
+#       pass
+#     case _:
+#       return
 
-      # Get JSON elements to replace (2)
-      txt_replace_key = json_loaded['key']['#']['item']
-      txt_replace_result = json_loaded['result']['item']
+# #######
+# # WIP #
+# #######
+# def write_generic_json(json_type, block: BlockClass, json_loaded):
+#   input_mod_name = block.mod_name
+#   input_block_name = block.block_name
 
-      # Write all 9 variants of parent block
-      for i in range(9):
-        #Replace item element with parent block
-        txt_replaced_key = re.sub(r"\[template\]", input_block, txt_replace_key)
+#   # Define JSON elements that need to be replaced.
+#   # This depends on the JSON file being modified.
 
-        txt_replaced_result = re.sub(r"\[template\]", input_block, txt_replace_result)
-        txt_replaced_result = re.sub(r"\[no\]", str(i+1), txt_replaced_result)
+#   # Write 1x-9x block variants for specific JSON file
 
-        if i + 1 == 1:
-          txt_replaced_key = re.sub(r"\[mod\]", input_mod_name, txt_replaced_key)
-          txt_replaced_key = re.sub(r"\[no_x\]", "", txt_replaced_key)
-          pass
-        else:
-          txt_replaced_key = re.sub(r"\[mod\]", "allthecompressed", txt_replaced_key)
-          txt_replaced_key = re.sub(r"\[no_x\]", "".join(["_", str(i), "x"]), txt_replaced_key)
-          # Replace "item" element with ATC variant
-        
-        # Rebuild JSON
-        json_loaded['key']['#']['item'] = txt_replaced_key
-        json_loaded['result']['item'] = txt_replaced_result
+#   pass
 
-        # Write to file
-        #   i.  Get ATC JSON directory
-        respective_json_dir = paths.get_json_dir_full(json_type)
-        write_to_file = "".join([respective_json_dir, input_block, "_", str(i+1), "x.json"])
-
-        #   ii. 
-        try:
-          with open(write_to_file, 'w') as outfile:
-            json.dump(json_loaded, outfile, indent=2)
-        except:
-          print("[replace_template.py] replace_layered_json() ERROR:")
-          traceback.print_exc()
-          
-      index = 0
-
-      # Include x only if it's not the base (parent) block
-      
-
-      pass
-    case _:
-      # Use the usual replacement method
-      pass
-
-  # Open layered JSON
-  # json_layered = json.load(file_json)
-  # Select JSON elements to replace
+def format_json_string(txt_json, block: BlockClass, index):
+  txt_json_new = re.sub(r"\[template\]", block.block_name, txt_json)
+  txt_json_new = re.sub(r"\[no_x\]", str(index + 1), txt_json_new)
 
 
+  try:
+    txt_json_new = re.sub(r"\[mod\]", block.mod_name, txt_json_new)
+  except:
+    print("format_json_string error: ")
+    traceback.print_exc()
+  
+  return txt_json_new
 
-  # Read JSON content
+#######
+# WIP #
+#######
+def format_lesser_no_x(txt_json, index):
 
-  # i.  If index is 1, keep input mod name and remove x suffix
-  #     (i.e. minecraft:grass_block)
-  #
-  # ii. Otherwise, it becomes allthecompressed:[template]_[no_x]
-  #     (i.e. allthecompressed:grass_block_1x)
 
-  for index in range(9):
-    if index + 1 == 1:
-      pass
-    else:
-      pass
+  # Compressed recipe JSONs have an extra step.
+  # Change [lesser_no_x] depending on index in loop.
+  txt_json_build = txt_json
 
-  # for line in line_array:
-  #   if index == 1:
-  #     new_line = re.sub(r"\[lesser_no_x\]", "", line)
-  #     new_line = re.sub(r"\[mod\]", input_mod_name, new_line)
-  #     new_line = re.sub(r"\[template\]", "", new_line)
-  #   else:
-  #     new_line = re.sub(r"\[lesser_no_x\]", str(index-1) + "x", line)
+  if index + 1 == 1:
+    txt_json_build = re.sub(r"[\lesser_no_x\]", "", txt_json)
+  else:
+    txt_json_build = re.sub(r"\[lesser_no_x\]",\
+      "".join(["_", str(index), "x"]), txt_json)
+  return txt_json_build
 
-  # Get input mod name
-  mod_name = "minecraft"
-  # Get input block name
-  block_name = "hee"
+
 
 def replace_lesser_no_x(line, index):
   str_index = str(index) + "x"
@@ -141,4 +109,5 @@ def replace_lesser_no_x(line, index):
     str_index = ""
   return re.sub(r"\[lesser_no_x\]", str_index, line)
 
-replace_layered_json(JsonTypes.RECIPES_COMPRESS, "minecraft", "believeblock")
+# replace_layered_json(JsonTypes.RECIPES_COMPRESS, BlockClass("minecraft", "believeblock"))
+
