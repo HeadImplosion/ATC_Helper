@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "allthecompressed:[template]_[no_x]"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "[mod]:[template][lesser_no_x]"
+  }
+}

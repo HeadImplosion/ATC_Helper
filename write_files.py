@@ -122,16 +122,20 @@ def replace_template_terms(json_type, block: BlockClass, index):
 
 
 # block_class.py:BlockClass
-def write_compressed_recipe(json_type, block: BlockClass, json_loaded):
+def write_compressed_recipe(block: BlockClass):
+
+  # Load JSON file depending on JsonType
+  json_c_recipe_template = paths.get_c_recipe_template()
+
   # GLOBAL
   # Use different replacement method
-  input_mod_name = block.mod_name
-  input_block_name = block.block_name
+  input_name_mod = block.mod_name
+  input_name_block = block.block_name
 
   # LOCAL
   # Get JSON elements to replace (2)
-  txt_replace_key = json_loaded['key']['#']['item']
-  txt_replace_result = json_loaded['result']['item']
+  txt_replace_key = json_c_recipe_template['key']['#']['item']
+  txt_replace_result = json_c_recipe_template['result']['item']
 
   # Write all 9 variants of parent block
   for i in range(9):
@@ -141,10 +145,10 @@ def write_compressed_recipe(json_type, block: BlockClass, json_loaded):
     def replace_key(template_key):
       build_template_key = template_key
 
-      build_template_key = re.sub(r"\[template\]", input_block_name, build_template_key)
+      build_template_key = re.sub(r"\[template\]", input_name_block, build_template_key)
 
       if i + 1 == 1:
-        build_template_key = re.sub(r"\[mod\]", input_mod_name, build_template_key)
+        build_template_key = re.sub(r"\[mod\]", input_name_mod, build_template_key)
         build_template_key = re.sub(r"\[lesser_no_x\]", "", build_template_key)
       else:
         build_template_key = re.sub(r"\[mod\]", "allthecompressed", build_template_key)
@@ -154,7 +158,7 @@ def write_compressed_recipe(json_type, block: BlockClass, json_loaded):
   
     def replace_result(template_result):
       build_template_result = template_result
-      build_template_result = re.sub(r"\[template\]", input_block_name, txt_replace_result)
+      build_template_result = re.sub(r"\[template\]", input_name_block, txt_replace_result)
       build_template_result = re.sub(r"\[no_x\]", str(i+1) + "x", build_template_result)
       return build_template_result
   
@@ -162,23 +166,73 @@ def write_compressed_recipe(json_type, block: BlockClass, json_loaded):
   ###################
 
   # Rebuild JSON
-    json_loaded['key']['#']['item'] = replace_key(txt_replace_key)
-    json_loaded['result']['item'] = replace_result(txt_replace_result)
+    json_c_recipe_template['key']['#']['item'] = replace_key(txt_replace_key)
+    json_c_recipe_template['result']['item'] = replace_result(txt_replace_result)
 
   # Write to JSON file
-    respective_json_dir = paths.get_json_dir_full(json_type)
-    write_to_file = "".join([respective_json_dir, input_block_name, "_", str(i+1), "x.json"])
+    respective_json_dir = paths.get_json_dir_full(JsonTypes.RECIPES_COMPRESS)
+    write_to_file = "".join([respective_json_dir, input_name_block, "_", str(i+1), "x.json"])
 
     try:
       with open(write_to_file, 'w') as outfile:
-        json.dump(json_loaded, outfile, indent=2)
+        json.dump(json_c_recipe_template, outfile, indent=2)
     except:
       print("[replace_template.py] replace_layered_json() ERROR:")
       traceback.print_exc()
 
+def write_decompressed_recipe(block: BlockClass):
+  # Get JSON
+  json_decompress_recipe = paths.get_json_template(JsonTypes.RECIPES_DECOMPRESS)
 
-dir_template_recipe_compress = "C:\\Users\\Zhad\\Documents\\atc\\templates\\template_recipes_compress.json"
-file = open(dir_template_recipe_compress, 'r')
-json_loaded = json.load(file)
-write_compressed_recipe(JsonTypes.RECIPES_COMPRESS,\
-  BlockClass("minecraft", "pootis"), json_loaded)
+  input_name_mod = block.mod_name
+  input_name_block = block.block_name
+
+  # Get replaceable strings from said JSON
+  string_template_ingredients = json_decompress_recipe['ingredients'][0]['item']
+  string_template_result = json_decompress_recipe['result']['item']
+
+  for i in range(9):
+    # Replace ingredients.item
+    # "item": "allthecompressed:[template]_[no_x]"
+    def replace_item_ingredients(input_string):
+      build_string = input_string
+      build_string = re.sub(r"\[template\]", input_name_block, build_string)
+      build_string = re.sub("\[no_x\]", str(i+1) + "x", build_string)
+      return build_string
+    
+    # Replace result.item
+    # "item": "[mod]:[template][lesser_no_x]"
+    def replace_item_result(input_string):
+      build_string = input_string
+      build_string = re.sub(r"\[mod\]", input_name_mod, build_string)
+      build_string = re.sub(r"\[template\]", input_name_block, build_string)
+
+      if i + 1 == 1:
+        build_string = re.sub(r"\[lesser_no_x\]", "", build_string)
+      else:
+        build_string = re.sub(r"\[lesser_no_x\]", "_" + str(i) + "x", build_string)
+
+      return build_string
+    
+    replaced_ingredients = replace_item_ingredients(string_template_ingredients)
+    replaced_result = replace_item_result(string_template_result)
+
+    json_decompress_recipe['ingredients'][0]['item'] = replaced_ingredients
+    json_decompress_recipe['result']['item'] = replaced_result
+
+    json_dir_d_recipe = paths.get_json_dir_full(JsonTypes.RECIPES_DECOMPRESS)
+    write_to_file = "".join([json_dir_d_recipe, input_name_block, "_", str(i+1), "x.json"])      
+
+    try:
+      with open(write_to_file, 'w') as outfile:
+        json.dump(json_decompress_recipe, outfile, indent=2)
+    except:
+      print("[write_files.py] write_decompressed_recipe() ERROR:")
+      traceback.print_exc()
+# dir_template_recipe_compress = "C:\\Users\\Zhad\\Documents\\atc\\templates\\template_recipes_compress.json"
+# file = open(dir_template_recipe_compress, 'r')
+# json_loaded = json.load(file)
+# write_compressed_recipe(JsonTypes.RECIPES_COMPRESS,\
+#   BlockClass("minecraft", "pootis"), json_loaded)
+
+print("")

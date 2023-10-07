@@ -71,10 +71,10 @@ def replace_tag_no_x(line_array, index):
 
 #   pass
 
+# Format a single JSON string
 def format_json_string(txt_json, block: BlockClass, index):
   txt_json_new = re.sub(r"\[template\]", block.block_name, txt_json)
   txt_json_new = re.sub(r"\[no_x\]", str(index + 1), txt_json_new)
-
 
   try:
     txt_json_new = re.sub(r"\[mod\]", block.mod_name, txt_json_new)
