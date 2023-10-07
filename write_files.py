@@ -93,6 +93,36 @@ def write_model_block_all(block: BlockClass):
     write_model_block(block, str(x+1))
   return
 
+def write_model_item(block: BlockClass):
+  # Get model/item/.json
+  json_model_item = paths.get_json_template(JsonTypes.MODELS_ITEM)
+
+  input_name_mod = block.mod_name
+  input_name_block = block.block_name
+
+  string_template_parent = json_model_item['parent']
+
+  for i in range(9):
+    def replace_parent(input_string):
+      build_string = input_string
+      build_string = re.sub(r"\[template\]", input_name_block, build_string)
+      build_string = re.sub(r"\[no_x\]", str(i+1) + "x", build_string)
+      return build_string
+
+    built_string = replace_parent(string_template_parent)
+    json_model_item['parent'] = built_string
+
+    json_dir_model_item = paths.get_json_dir_full(JsonTypes.MODELS_ITEM)
+    write_to_file = "".join([json_dir_model_item, input_name_block, "_", str(i+1), "x.json"])
+    try:
+      with open(write_to_file, 'w') as outfile:
+        json.dump(json_model_item, outfile, indent=2)
+    except:
+      pass
+
+  print("hey")
+
+
 # !!
 def replace_template_terms(json_type, block: BlockClass, index):
   mod_name = "minecraft"
