@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_[template][lesser_no_x]": {
+    "has_[template]_[no_x]": {
       "conditions": {
         "items": [
           {
             "items": [
-              "[mod]:[template][lesser_no_x]"
+              "allthecompressed:[template]_[no_x]"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "allthecompressed:compress/[template]_[no_x]"
+        "recipe": "allthecompressed:decompress/[template]_[no_x]"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_[template][lesser_no_x]",
+      "has_[template]_[no_x]",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "allthecompressed:compress/[template]_[no_x]"
+      "allthecompressed:decompress/[template]_[no_x]"
     ]
   },
   "sends_telemetry_event": false

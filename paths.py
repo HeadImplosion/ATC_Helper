@@ -36,7 +36,7 @@ def get_template_dir(json_type=None):
     traceback.print_exc()
     return "_invalid"
 
-def get_dirs_config():
+def get_json_atc_paths():
   # Find directory of paths.json in config folder
   # print("path: " + get_config_dir("paths"))
 
@@ -44,9 +44,9 @@ def get_dirs_config():
   return json.load(file_config)
 
 # Load ATC JSON files
-def get_atc_json_dir(json_type):
+def get_dir_from_atc_json(json_type):
   json_dir = ""
-  json_file = get_dirs_config()
+  json_file = get_json_atc_paths()
 
   # Get corresponding directory of AllTheCompressed JSONs
   match json_type:
@@ -73,18 +73,15 @@ def get_atc_json_dir(json_type):
 
   return json_dir
 
-def get_atc_json_dir_full(json_type):
-  return get_current_dir() + get_atc_json_dir(json_type)
+def get_dir_from_atc_json_full(json_type):
+  return get_java_dir() + "\\" + get_dir_from_atc_json(json_type)
 
 def get_java_dir():
   return "\\".join([get_current_dir(), "java"])
 
-def get_json_dir_full(json_type):
-  return "\\".join([get_java_dir(), get_atc_json_dir(json_type)])
-
-def get_config_json():
-  file = open(get_config_dir("paths"))
-  return json.load(file)
+# def get_config_json():
+#   file = open(get_config_dir("paths"))
+#   return json.load(file)
 
 def get_json_template(json_type):
   dir_template = get_template_dir(json_type)

@@ -112,7 +112,7 @@ def write_model_item(block: BlockClass):
     built_string = replace_parent(string_template_parent)
     json_model_item['parent'] = built_string
 
-    json_dir_model_item = paths.get_json_dir_full(JsonTypes.MODELS_ITEM)
+    json_dir_model_item = paths.get_dir_from_atc_json_full(JsonTypes.MODELS_ITEM)
     write_to_file = "".join([json_dir_model_item, input_name_block, "_", str(i+1), "x.json"])
     try:
       with open(write_to_file, 'w') as outfile:
@@ -121,6 +121,72 @@ def write_model_item(block: BlockClass):
       pass
 
   print("hey")
+
+def write_advancement_compress(block: BlockClass):
+  # Get paths.json in config folder
+  # and retrieve advancement/compress/.json path
+  dir_adv_compress = paths.get_template_dir(JsonTypes.ADVANCEMENTS_COMPRESS)
+
+  # Retrieve template_advancement_compress.json
+  file_adv_compress = open(dir_adv_compress)
+  array_str_adv_compress = file_adv_compress.readlines()
+
+  # Replace [template]
+  for i in range(9):
+    array_build = []
+
+    for line in array_str_adv_compress:
+      # Replace [template]
+      line_build = re.sub(r"\[template\]", block.block_name, line)
+      line_build = re.sub(r"\[no_x\]", str(i+1) + "x", line_build)
+
+      if i + 1 == 1:  # i.e. minecraft:[block]
+        line_build = re.sub(r"\[mod\]", block.mod_name, line_build)
+        line_build = re.sub(r"\[lesser_no_x\]", "", line_build)
+      else:           # i.e. allthecompressed:[block]_1x to 8x
+        line_build = re.sub(r"\[mod\]", "allthecompressed", line_build)
+        line_build = re.sub(r"\[lesser_no_x\]", "".join(["_", str(i), "x"]), line_build)
+
+      array_build.append(line_build)
+    
+    # Get write-to directory for compress advancement
+    dir_to_adv_compress = paths.get_dir_from_atc_json_full(JsonTypes.ADVANCEMENTS_COMPRESS)
+    write_to_file = "".join([dir_to_adv_compress, block.block_name, "_", str(i+1), "x.json"])
+    # Re-write built lines into file
+    try:
+
+      with open(write_to_file, 'w') as outfile:
+        outfile.writelines(array_build)
+    except:
+      print("Can't write advancement file: ")
+      traceback.print_exc()
+
+def write_advancement_decompress(block: BlockClass):
+  # Get paths.json in config folder
+  # and retrieve respective directory
+  dir_adv_decompress = paths.get_template_dir(JsonTypes.ADVANCEMENTS_DECOMPRESS)
+
+  # Retrieve template_adv_compress.json
+  file_adv_decompress = open(dir_adv_decompress)
+  array_str_adv_decompress = file_adv_decompress.readlines()
+
+  for i in range(9):
+    array_build = []
+
+    for line in array_str_adv_decompress:
+      line_build = re.sub(r"\[template\]", block.block_name, line)
+      line_build = re.sub(r"\[no_x\]", str(i+1) + "x", line_build)
+      array_build.append(line_build)
+    
+    dir_to_adv_decompress = paths.get_dir_from_atc_json_full(JsonTypes.ADVANCEMENTS_DECOMPRESS)
+    write_to_file = "".join([dir_to_adv_decompress, block.block_name, "_", str(i+1), "x.json"])
+
+    try:
+      with open(write_to_file, 'w') as outfile:
+        outfile.writelines(array_build)
+    except:
+      print("ERROR, can't write advancement file: ")
+      traceback.print_exc()
 
 
 # !!
@@ -200,7 +266,7 @@ def write_compressed_recipe(block: BlockClass):
     json_c_recipe_template['result']['item'] = replace_result(txt_replace_result)
 
   # Write to JSON file
-    respective_json_dir = paths.get_json_dir_full(JsonTypes.RECIPES_COMPRESS)
+    respective_json_dir = paths.get_dir_from_atc_json_full(JsonTypes.RECIPES_COMPRESS)
     write_to_file = "".join([respective_json_dir, input_name_block, "_", str(i+1), "x.json"])
 
     try:
@@ -250,7 +316,7 @@ def write_decompressed_recipe(block: BlockClass):
     json_decompress_recipe['ingredients'][0]['item'] = replaced_ingredients
     json_decompress_recipe['result']['item'] = replaced_result
 
-    json_dir_d_recipe = paths.get_json_dir_full(JsonTypes.RECIPES_DECOMPRESS)
+    json_dir_d_recipe = paths.get_dir_from_atc_json_full(JsonTypes.RECIPES_DECOMPRESS)
     write_to_file = "".join([json_dir_d_recipe, input_name_block, "_", str(i+1), "x.json"])      
 
     try:
@@ -264,5 +330,3 @@ def write_decompressed_recipe(block: BlockClass):
 # json_loaded = json.load(file)
 # write_compressed_recipe(JsonTypes.RECIPES_COMPRESS,\
 #   BlockClass("minecraft", "pootis"), json_loaded)
-
-print("")
