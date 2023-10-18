@@ -6,7 +6,7 @@ from my_class import myClass
 import config_class
 import traceback
 
-def write_vanilla(block_name):
+def write_vanilla(block_name, local_name):
   mod_name = McMods.MINECRAFT.name.lower()
   block = BlockClass(mod_name, block_name)
 
@@ -18,7 +18,7 @@ def write_vanilla(block_name):
     write_files.write_decompressed_recipe(block)
     write_files.write_advancement_compress(block)
     write_files.write_advancement_decompress(block)
-    write_files.write_lang_from_block(block)
+    write_files.write_lang_from_block(BlockClassL.from_block(block, local_name))
 
     # Write to en_us.json as well, including both block and item variants
 
@@ -40,7 +40,7 @@ def write_vanilla(block_name):
 # write_vanilla("spruce_wood")
 # write_vanilla("crimson_hyphae")
 # write_vanilla("warped_hyphae")
-write_vanilla("")
+write_vanilla("air", "Air")
 
 # write_files.write_advancement_compress(BlockClass("minecraft","horoscope"))
 # write_files.write_advancement_decompress(BlockClass("minecraft","horoscope"))
