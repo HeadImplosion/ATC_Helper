@@ -1,5 +1,6 @@
 from block_class import BlockClass
 from mc_mods import McMods
+from block_class_local import BlockClassL
 import write_files
 from my_class import myClass
 import config_class
@@ -17,6 +18,10 @@ def write_vanilla(block_name):
     write_files.write_decompressed_recipe(block)
     write_files.write_advancement_compress(block)
     write_files.write_advancement_decompress(block)
+    write_files.write_lang_from_block(block)
+
+    # Write to en_us.json as well, including both block and item variants
+
 
     print("Written all necessary files for block " + block_name + " succesfully.")
   except:
@@ -35,7 +40,7 @@ def write_vanilla(block_name):
 # write_vanilla("spruce_wood")
 # write_vanilla("crimson_hyphae")
 # write_vanilla("warped_hyphae")
-write_vanilla("iron_ore")
+write_vanilla("")
 
 # write_files.write_advancement_compress(BlockClass("minecraft","horoscope"))
 # write_files.write_advancement_decompress(BlockClass("minecraft","horoscope"))

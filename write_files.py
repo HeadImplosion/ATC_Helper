@@ -1,7 +1,9 @@
 from block_class import BlockClass
+from block_class_local import BlockClassL
 import config_class
 from json_dirs import JsonDirs
 from json_types import JsonTypes
+import copy
 import json
 import paths
 import replace_template
@@ -330,3 +332,112 @@ def write_decompressed_recipe(block: BlockClass):
 # json_loaded = json.load(file)
 # write_compressed_recipe(JsonTypes.RECIPES_COMPRESS,\
 #   BlockClass("minecraft", "pootis"), json_loaded)
+
+###############################
+# Imported from external file #
+###############################
+
+def read_lang():
+  # dir_to_lang = "en_us.json"
+  dir_to_lang = paths.get_dir_from_atc_json_full(JsonTypes.LANG)
+
+  file_read_lang = open(dir_to_lang, 'r')
+  dict_lang = json.load(file_read_lang)
+
+  return dict_lang
+
+# Add both "block." and "item." tuples to list
+def add_block_to_local_list(block: BlockClass):
+  build_list = list()
+  for i in range(9):
+    # Tuple for block name and localized name
+    block_name_full = "".join(["block", ".allthecompressed.", block.block_name, "_", str(i+1), "x"])
+    item_name_full = "".join(["item", ".allthecompressed.", block.block_name, "_", str(i+1), "x"])
+    block_name_local = "".join([block.block_name_local, " ", str(i+1), "x"])
+
+    build_pair_block = (block_name_full, block_name_local)
+    build_pair_item = (item_name_full, block_name_local)
+    build_list.append(build_pair_block)
+    build_list.append(build_pair_item)
+  return build_list
+
+# Compile all required blocks first.
+def add_blocks_to_local_list(all_input_blocks: list[BlockClass]):
+  build_list = []
+  for block in all_input_blocks:
+    build_list += add_block_to_local_list(block)
+
+  return build_list
+
+# Add to existing list
+def append_existing_localization(block_list: list[BlockClass]):
+  list_from_dict = list(read_lang().items())
+  full_list = list_from_dict + block_list
+  return full_list
+
+# THEN sort
+# Finally, convert back to dict
+def list_to_sorted_dict(list):
+  hold_list = list 
+  hold_list.sort()
+  pass
+  return dict(hold_list)
+
+def write_to_json(dict):
+  with open(paths.get_dir_from_atc_json_full(JsonTypes.LANG), 'w') as outfile:
+    json.dump(dict, outfile, indent=2)
+
+def write_lang_from_block(local_block: BlockClassL):
+  write_lang_from_blocks([local_block])
+  pass
+
+def write_lang_from_blocks(local_block_list: list):
+  local_list_to_append = add_blocks_to_local_list(local_block_list)
+  updated_list = append_existing_localization(local_list_to_append)
+  dict_sorted = list_to_sorted_dict(updated_list)
+
+  write_to_json(dict_sorted)
+
+# ONE-TIME USE ONLY! 
+def add_item_variant():
+  # Open en_us.json file
+  file_en_us = open('C:\\Users\\Zhad\\Documents\\atc\\java\\src\\generated\\resources\\assets\\allthecompressed\\lang\\en_us.json', 'r')
+ 
+  json_en_us: dict = json.load(file_en_us)
+  list_en_us_input = list(json_en_us.items())
+  list_rebuild = copy.deepcopy(list_en_us_input)
+
+  for i in list_en_us_input:
+    # Read each of the key strings
+    key_string = i[0]
+    value_string = i[1]
+
+    # Split key strings and rebuild with 'item'
+    key_string_split: list = key_string.split('.')
+    key_string_split[0] = "item"
+    rebuilt_key_string = ".".join(key_string_split)
+
+    rebuild_pair = (rebuilt_key_string, value_string)
+
+    # Convert back to dict
+    list_rebuild.append(rebuild_pair)
+
+    print("Looping: " + str(i))
+  # i.e.  block.allthecompressed.acacia_log
+  #       -> ["block", "allthecompressed", "acacia_log"]
+  pass
+  dict_rebuilt = dict(list_rebuild)
+  with open('TESTINGG.json', 'w') as outfile:
+    json.dump(dict_rebuilt, outfile, indent=2)
+
+# add_item_variant()
+
+# block_input = BlockClassL.from_block(BlockClass("minecraft", "tinted_glass"), "Tinted Glass")
+# block_input2 = BlockClassL.from_block(BlockClass("minecraft", "chiseled_glass"), "Chiseled Glass")
+# block_input3 = BlockClassL.from_block(BlockClass("minecraft", "kyubey_remains"), "Kyubey Remains")
+
+# block_list = [block_input, block_input2, block_input3]
+
+# write_lang_from_blocks(block_list)
+
+# pass
